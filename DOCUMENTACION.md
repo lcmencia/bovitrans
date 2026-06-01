@@ -228,8 +228,28 @@ npx prisma generate
 ```
 
 ### 6.4 Usuarios de prueba
-El seed crea usuarios de ejemplo, pero con hashes de contraseña placeholder. Para probar,
-**registrá usuarios nuevos** desde `/register` (un operador y un cliente).
+El seed crea cuentas listas para usar (contraseña **`demo1234`**):
+
+- Operador: `operador@bovitrans.com`
+- Clientes: `cliente1@bovitrans.com`, `cliente2@bovitrans.com`, `cliente3@bovitrans.com`
+
+El seed incluye camiones, solicitudes en todos los estados, un viaje en tránsito con
+tracking, pagos, documentos (Guía/POD), reseñas y notificaciones.
+
+### 6.5 Endpoints v2 (PRD)
+
+| Método | Ruta | Rol | Descripción |
+|--------|------|-----|-------------|
+| POST | `/api/solicitudes/:id/tracking` | operador | Emitir posición GPS |
+| GET | `/api/solicitudes/:id/tracking` | auth | Historial de tracking |
+| GET | `/api/solicitudes/:id/tracking/stream` | auth | **SSE** en vivo |
+| POST | `/api/solicitudes/:id/entregar` | operador | POD + completar (reconciliación de cabezas) |
+| GET | `/api/solicitudes/:id/documentos` | auth | Guía / POD / SENACSA |
+| POST | `/api/solicitudes/:id/review` | auth | Calificar al otro participante |
+| GET | `/api/pagos` | operador | Billetera (saldos, cobrables, historial) |
+| POST | `/api/pagos` | operador | Cobrar un viaje (Net-7 / 48h / 24h) |
+| GET | `/api/notificaciones` | auth | Notificaciones + no leídas |
+| POST | `/api/notificaciones` | auth | Marcar todas como leídas |
 
 ---
 

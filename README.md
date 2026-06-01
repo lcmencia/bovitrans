@@ -17,8 +17,18 @@ cp .env.example .env
 docker-compose up --build
 ```
 
-App en **http://localhost:3000**. La base se inicializa sola (esquema + datos semilla).
-Registrá un usuario en `/register` (operador o cliente) para empezar.
+App en **http://localhost:3000**. La base se inicializa sola (esquema + **datos semilla
+completos**).
+
+**Cuentas de prueba** (contraseña `demo1234`):
+
+| Rol | Email |
+|-----|-------|
+| Operador | `operador@bovitrans.com` |
+| Cliente | `cliente1@bovitrans.com` · `cliente2@bovitrans.com` · `cliente3@bovitrans.com` |
+
+El seed trae camiones, solicitudes en todos los estados, un viaje en tránsito con tracking,
+pagos, documentos (Guía/POD), reseñas y notificaciones.
 
 ## 🧱 Stack
 
@@ -28,12 +38,20 @@ Leaflet + OpenStreetMap + OSRM · Tailwind CSS · Docker Compose.
 ## 🗺️ ¿Qué hace?
 
 - **Cliente:** crea solicitudes de transporte marcando origen y destino en un mapa.
-- **Operador:** ve todas las solicitudes en un dashboard, administra la flota de camiones y,
-  al asignar un camión, obtiene:
+- **Operador:** ve todas las solicitudes en un dashboard con **KPIs y mapa de flota en
+  vivo**, administra la flota y, al asignar un camión, obtiene:
   - la **distancia** de la ruta (real, por carretera),
   - el **costo de combustible** proyectado (`distancia × consumo × precio`),
   - el **costo total** considerando múltiples viajes si la carga excede la capacidad,
   - una **sugerencia** del mejor camión, con advertencias de capacidad.
+
+### Funcionalidades v2 (inspiradas en el PRD)
+
+- **Tracking GPS en vivo** (SSE) con simulación de recorrido y alerta de bienestar animal.
+- **Billetera / pago rápido**: cobro de viajes con 3 velocidades (Net-7 / 48h / 24h).
+- **Documentación ganadera**: Guía de traslado y **POD con reconciliación de cabezas** (mermas).
+- **Reseñas bidireccionales** y reputación.
+- **Notificaciones** in-app y **reportes** (costo por cabeza, ingresos, top clientes).
 
 ## 📚 Documentación
 

@@ -123,24 +123,27 @@ Extensiones a entidades existentes:
 
 ## 6. Roadmap incremental (sobre la base v1)
 
-**Fase A — Operación en vivo (lo de mayor impacto visible)**
-- Tracking GPS con SSE + mapa en vivo para el cliente/operador.
-- Estados intermedios de la solicitud (`EN_CARGA`, `ENTREGADA`).
-- Notificaciones in-app.
+> **Estado:** las Fases A–D fueron implementadas en gran parte (✅). Lo pendiente queda
+> marcado como ⏳.
 
-**Fase B — Confianza y compliance ganadero**
-- POD digital con **reconciliación de cabezas** + fotos (S3/R2).
-- Guía de traslado de ganado + certificado SENACSA (generación PDF/QR; mock del organismo).
-- Reviews bidireccionales y reputación.
+**Fase A — Operación en vivo** ✅
+- ✅ Tracking GPS con SSE + mapa en vivo para el cliente/operador.
+- ✅ Notificaciones in-app (campana con no leídas).
+- ✅ KPIs + mapa de flota en vivo en el dashboard.
 
-**Fase C — Economía de la plataforma**
-- Billetera + payout (mock financiero, luego SPI/Tigo).
-- Pricing dinámico (reglas por zafra/demanda) extendiendo el cálculo actual.
-- Backhaul / retornos.
+**Fase B — Confianza y compliance ganadero** ✅
+- ✅ POD digital con **reconciliación de cabezas** (mermas). ⏳ Fotos a S3/R2.
+- ✅ Guía de traslado + certificado SENACSA (registro con código/QR; ⏳ PDF real).
+- ✅ Reviews bidireccionales y reputación (rating_avg).
 
-**Fase D — Inteligencia**
-- Reportes/analytics (costo por cabeza, benchmarks).
-- Rol `transportista` self-serve y marketplace navegable (si el negocio lo pide).
+**Fase C — Economía de la plataforma** ✅ (mock financiero)
+- ✅ Billetera + payout con 3 velocidades (Net-7 / 48h / 24h). ⏳ SPI/Tigo reales.
+- ⏳ Pricing dinámico (reglas por zafra/demanda).
+- ⏳ Backhaul / retornos.
+
+**Fase D — Inteligencia** ✅ (analytics base)
+- ✅ Reportes (costo por cabeza, ingresos, top clientes, distribución por estado).
+- ⏳ Rol `transportista` self-serve y marketplace navegable.
 
 ---
 
