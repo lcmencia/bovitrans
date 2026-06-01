@@ -46,7 +46,20 @@ export default async function MisSolicitudesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {solicitudes.map((s) => (
-            <SolicitudCard key={s.id} solicitud={s} />
+            <SolicitudCard
+              key={s.id}
+              solicitud={s}
+              actions={
+                s.estado === "ASIGNADA" || s.estado === "EN_TRANSITO" ? (
+                  <Link
+                    href={`/seguimiento/${s.id}`}
+                    className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700"
+                  >
+                    Seguir viaje en vivo
+                  </Link>
+                ) : undefined
+              }
+            />
           ))}
         </div>
       )}

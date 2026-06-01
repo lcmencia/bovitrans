@@ -139,6 +139,21 @@ CREATE INDEX idx_solicitudes_cliente ON solicitudes (cliente_id);
 CREATE INDEX idx_solicitudes_camion  ON solicitudes (camion_id);
 
 -- =============================================================================
+-- Tabla: tracking_points (v2 — tracking GPS en vivo, docs/05)
+-- Puntos inmutables emitidos durante un viaje EN_TRANSITO.
+-- =============================================================================
+CREATE TABLE tracking_points (
+    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    solicitud_id  BIGINT       NOT NULL REFERENCES solicitudes(id) ON DELETE CASCADE,
+    lat           NUMERIC(9,6) NOT NULL,
+    lng           NUMERIC(9,6) NOT NULL,
+    velocidad_kmh NUMERIC(6,2),
+    registrado_en TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_tracking_solicitud ON tracking_points (solicitud_id, registrado_en);
+
+-- =============================================================================
 -- DATOS SEMILLA (docs/03 §7)
 -- =============================================================================
 -- NOTA: los password_hash de ejemplo corresponden al hash bcrypt de la

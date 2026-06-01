@@ -29,3 +29,10 @@ export const destinoIcon = L.divIcon({
   iconSize: [18, 18],
   iconAnchor: [9, 9],
 });
+
+export const camionIcon = L.divIcon({
+  className: "",
+  html: `<div style="font-size:22px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))">🚚</div>`,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});

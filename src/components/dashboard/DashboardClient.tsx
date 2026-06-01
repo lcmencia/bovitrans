@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { SolicitudDTO, Estado } from "@/services/solicitudes";
 import SolicitudCard from "@/components/SolicitudCard";
 import AsignarModal from "@/components/dashboard/AsignarModal";
@@ -72,9 +73,19 @@ export default function DashboardClient({
         </button>
       );
     }
+    const seguir = (
+      <Link
+        href={`/viajes/${s.id}`}
+        className={`${btn} bg-brand-600 text-white hover:bg-brand-700`}
+      >
+        Seguir viaje
+      </Link>
+    );
+
     if (s.estado === "ASIGNADA") {
       return (
         <>
+          {seguir}
           <button
             disabled={disabled}
             onClick={() => transicionar(s.id, "EN_TRANSITO")}
@@ -95,6 +106,7 @@ export default function DashboardClient({
     if (s.estado === "EN_TRANSITO") {
       return (
         <>
+          {seguir}
           <button
             disabled={disabled}
             onClick={() => transicionar(s.id, "COMPLETADA")}

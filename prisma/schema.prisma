@@ -94,8 +94,22 @@ model solicitudes {
   cliente  usuarios  @relation("cliente", fields: [cliente_id], references: [id])
   operador usuarios? @relation("operador", fields: [operador_id], references: [id])
   camion   camiones? @relation(fields: [camion_id], references: [id])
+  tracking tracking_points[]
 
   @@index([estado])
   @@index([cliente_id])
   @@index([camion_id])
+}
+
+model tracking_points {
+  id            BigInt      @id @default(autoincrement())
+  solicitud_id  BigInt
+  lat           Decimal     @db.Decimal(9, 6)
+  lng           Decimal     @db.Decimal(9, 6)
+  velocidad_kmh Decimal?    @db.Decimal(6, 2)
+  registrado_en DateTime    @default(now()) @db.Timestamptz(6)
+
+  solicitud solicitudes @relation(fields: [solicitud_id], references: [id], onDelete: Cascade)
+
+  @@index([solicitud_id, registrado_en])
 }
