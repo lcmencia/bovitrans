@@ -29,6 +29,18 @@ body {
   box-sizing: border-box;
 }
 
+/*
+ * Leaflet usa z-index internos altos (panes ~400–700, controles ~800–1000).
+ * Sin contención, esas capas se pintan por encima de modales/overlays.
+ * Aislamos cada mapa en su propio contexto de apilamiento (z-index 0) para que
+ * sus z-index internos queden confinados y nunca tapen un modal.
+ */
+.leaflet-container {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+}
+
 ::selection {
   background: #d6e5da;
   color: #173d24;

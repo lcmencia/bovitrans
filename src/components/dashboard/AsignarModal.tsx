@@ -76,8 +76,8 @@ export default function AsignarModal({
   }
 
   return (
-    <div className="fixed inset-0 z-30 grid place-items-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-lift">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-gray-100 p-5">
           <div>
