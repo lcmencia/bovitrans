@@ -1,28 +1,17 @@
 import { prisma } from "@/lib/db";
 import { ServiceError } from "@/lib/errors";
 import { notificarOperadores } from "@/services/notificaciones";
-import type { estado_solicitud } from "@prisma/client";
+import { puedeTransicionar, type Estado } from "@/lib/estados";
 import type { CrearSolicitudInput } from "@/schemas/solicitud";
 
 /**
- * Servicio de solicitudes (E3). Incluye la máquina de estados (ADR-001) y la
- * visibilidad por rol (US-1.3). El cálculo/asignación vive en services/asignacion.
+ * Servicio de solicitudes (E3). La máquina de estados (ADR-001) vive en
+ * lib/estados (módulo puro, testeable). Acá va la visibilidad por rol (US-1.3)
+ * y la persistencia. El cálculo/asignación vive en services/asignacion.
  */
 
-export type Estado = estado_solicitud;
-
-/** Transiciones válidas de la máquina de estados (ADR-001). */
-const TRANSICIONES: Record<Estado, Estado[]> = {
-  PENDIENTE: ["ASIGNADA", "CANCELADA"],
-  ASIGNADA: ["EN_TRANSITO", "CANCELADA"],
-  EN_TRANSITO: ["COMPLETADA", "CANCELADA"],
-  COMPLETADA: [],
-  CANCELADA: [],
-};
-
-export function puedeTransicionar(desde: Estado, hacia: Estado): boolean {
-  return TRANSICIONES[desde].includes(hacia);
-}
+export type { Estado };
+export { puedeTransicionar };
 
 export type SolicitudDTO = {
   id: string;
