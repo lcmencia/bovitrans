@@ -37,6 +37,8 @@ services:
       # Conexión a la base (host = nombre del servicio en la red de compose)
       DATABASE_URL: postgres://${POSTGRES_USER:-bovitrans}:${POSTGRES_PASSWORD:-bovitrans}@db:5432/${POSTGRES_DB:-bovitrans}
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      # Cookie Secure solo bajo HTTPS; en http://localhost debe ser false.
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
       NODE_ENV: production
     ports:
       - "${APP_PORT:-3000}:3000"

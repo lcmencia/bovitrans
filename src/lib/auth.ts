@@ -65,7 +65,10 @@ export async function setSessionCookie(token: string) {
   const store = await cookies();
   store.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    // `secure` se controla por env (no por NODE_ENV): el contenedor corre en
+    // modo production pero se accede por http://localhost, donde una cookie
+    // Secure no se almacena. En un deploy con HTTPS, setear COOKIE_SECURE=true.
+    secure: process.env.COOKIE_SECURE === "true",
     sameSite: "lax",
     path: "/",
     maxAge: SESSION_MAX_AGE,
