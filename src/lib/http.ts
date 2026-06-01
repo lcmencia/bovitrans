@@ -79,6 +79,7 @@ export function fromAuthError(err: AuthError) {
 
 const SERVICE_ERROR_CODE: Record<number, string> = {
   400: "BAD_REQUEST",
+  403: "FORBIDDEN",
   404: "NOT_FOUND",
   409: "CONFLICT",
   422: "UNPROCESSABLE",

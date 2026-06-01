@@ -3,6 +3,8 @@ import { ServiceError } from "@/lib/errors";
 import { calcularDistanciaKm } from "@/lib/routing";
 import { calcularAsignacion } from "@/lib/calculo";
 import { precioCombustibleVigente } from "@/services/configuracion";
+import { generarGuiaTraslado } from "@/services/documentos";
+import { notificar } from "@/services/notificaciones";
 import {
   toSolicitudDTO,
   type SolicitudDTO,
@@ -196,6 +198,17 @@ export async function asignarCamion(params: {
       },
       include: INCLUDE_CAMION,
     });
+
+    // Genera la Guía de traslado y avisa al cliente.
+    await generarGuiaTraslado(solicitudId, camion.patente);
+    await notificar({
+      usuarioId: s.cliente_id,
+      tipo: "SOLICITUD_ASIGNADA",
+      titulo: "Solicitud asignada",
+      cuerpo: `Tu traslado fue asignado al camión ${camion.patente}.`,
+      data: { solicitud_id: solicitudId.toString() },
+    });
+
     return toSolicitudDTO(actualizada);
   } catch (err) {
     if (

@@ -133,13 +133,6 @@ export default function DashboardClient({
           {seguir}
           <button
             disabled={disabled}
-            onClick={() => transicionar(s.id, "COMPLETADA")}
-            className={`${btn} bg-green-600 text-white hover:bg-green-700`}
-          >
-            Completar
-          </button>
-          <button
-            disabled={disabled}
             onClick={() => transicionar(s.id, "CANCELADA")}
             className={`${btn} border border-gray-300 text-gray-600 hover:bg-gray-100`}
           >

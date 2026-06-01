@@ -5,6 +5,8 @@ import Topbar from "@/components/Topbar";
 const NAV = [
   { href: "/dashboard", label: "Solicitudes" },
   { href: "/flota", label: "Flota" },
+  { href: "/dinero", label: "Dinero" },
+  { href: "/reportes", label: "Reportes" },
   { href: "/configuracion", label: "Configuración" },
 ];
 

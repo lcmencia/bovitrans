@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { listarSolicitudes } from "@/services/solicitudes";
+import { misReviews } from "@/services/reviews";
 import SolicitudCard from "@/components/SolicitudCard";
+import ReviewButton from "@/components/ReviewButton";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ export default async function MisSolicitudesPage() {
     rol: "cliente",
     usuarioId: BigInt(session.id),
   });
+  const reviewed = await misReviews(BigInt(session.id));
 
   return (
     <div>
@@ -57,6 +60,8 @@ export default async function MisSolicitudesPage() {
                   >
                     Seguir viaje en vivo
                   </Link>
+                ) : s.estado === "COMPLETADA" && !reviewed.has(s.id) ? (
+                  <ReviewButton solicitudId={s.id} />
                 ) : undefined
               }
             />

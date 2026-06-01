@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import NotificationBell from "./NotificationBell";
 
 type NavItem = { href: string; label: string };
 
@@ -50,6 +51,7 @@ export default function Topbar({
         </nav>
 
         <div className="flex items-center gap-3">
+          <NotificationBell />
           <div className="text-right">
             <p className="text-sm font-medium text-gray-900">{nombre}</p>
             <p className="text-xs capitalize text-gray-500">{rol}</p>

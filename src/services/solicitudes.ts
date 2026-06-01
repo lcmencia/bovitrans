@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { ServiceError } from "@/lib/errors";
+import { notificarOperadores } from "@/services/notificaciones";
 import type { estado_solicitud } from "@prisma/client";
 import type { CrearSolicitudInput } from "@/schemas/solicitud";
 
@@ -40,6 +41,7 @@ export type SolicitudDTO = {
     nro_viajes: number;
     costo_total: number;
   } | null;
+  cabezas_entregadas: number | null;
   asignada_at: string | null;
   created_at: string;
 };
@@ -62,6 +64,7 @@ type SolicitudConCamion = {
   costo_por_viaje: { toString(): string } | null;
   nro_viajes: number | null;
   costo_total: { toString(): string } | null;
+  cabezas_entregadas: number | null;
   asignada_at: Date | null;
   created_at: Date;
   camion: { id: bigint; patente: string; capacidad: number } | null;
@@ -101,6 +104,7 @@ export function toSolicitudDTO(s: SolicitudConCamion): SolicitudDTO {
           costo_total: num(s.costo_total),
         }
       : null,
+    cabezas_entregadas: s.cabezas_entregadas ?? null,
     asignada_at: s.asignada_at ? s.asignada_at.toISOString() : null,
     created_at: s.created_at.toISOString(),
   };
@@ -158,6 +162,14 @@ export async function crearSolicitud(params: {
     },
     include: INCLUDE_CAMION,
   });
+
+  await notificarOperadores({
+    tipo: "SOLICITUD_CREADA",
+    titulo: "Nueva solicitud",
+    cuerpo: `${solicitanteNombre} solicitó un traslado de ${input.cabezas} cabezas.`,
+    data: { solicitud_id: creada.id.toString() },
+  });
+
   return toSolicitudDTO(creada);
 }
 
