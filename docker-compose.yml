@@ -1,0 +1,47 @@
+# =============================================================================
+# BoviTrans MVP — Orquestación de servicios (ADR-004 usa PostgreSQL)
+# Levantar todo con:  docker-compose up --build   (US-7.1)
+# =============================================================================
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: bovitrans-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bovitrans}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bovitrans}
+      POSTGRES_DB: ${POSTGRES_DB:-bovitrans}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      # Persistencia de datos (US-7.1: los datos sobreviven a reinicios)
+      - pgdata:/var/lib/postgresql/data
+      # Inicialización automática del esquema + seed en el primer arranque
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bovitrans} -d ${POSTGRES_DB:-bovitrans}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bovitrans-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Conexión a la base (host = nombre del servicio en la red de compose)
+      DATABASE_URL: postgres://${POSTGRES_USER:-bovitrans}:${POSTGRES_PASSWORD:-bovitrans}@db:5432/${POSTGRES_DB:-bovitrans}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      # Cookie Secure solo bajo HTTPS; en http://localhost debe ser false.
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      NODE_ENV: production
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+volumes:
+  pgdata:

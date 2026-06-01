@@ -1,0 +1,229 @@
+// schema.prisma — BoviTrans
+//
+// IMPORTANTE (ADR-009): la fuente de verdad del esquema es db/init.sql.
+// Este archivo refleja ese esquema para generar el Prisma Client tipado.
+// No se usa `prisma migrate`. Para re-sincronizar tras cambiar init.sql:
+//   docker-compose up -d db   # crea el esquema desde init.sql
+//   npx prisma db pull        # introspección -> regenera estos modelos
+//   npx prisma generate       # regenera el client
+//
+// Nota: el índice parcial único `uniq_camion_activo` (ADR-004) vive solo en
+// init.sql; Prisma no modela índices parciales y la DB es quien lo garantiza.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum rol_usuario {
+  cliente
+  operador
+}
+
+enum estado_solicitud {
+  PENDIENTE
+  ASIGNADA
+  EN_TRANSITO
+  COMPLETADA
+  CANCELADA
+}
+
+enum estado_pago {
+  PENDIENTE
+  PROCESANDO
+  COMPLETADO
+  FALLIDO
+}
+
+enum velocidad_pago {
+  NET_7
+  H48
+  H24
+}
+
+enum metodo_pago {
+  SPI
+  TIGO_MONEY
+}
+
+enum tipo_documento {
+  GUIA_TRASLADO
+  POD
+  CERTIFICADO_SENACSA
+}
+
+enum tipo_notificacion {
+  SOLICITUD_CREADA
+  SOLICITUD_ASIGNADA
+  EN_TRANSITO
+  ENTREGADA
+  PAGO_LISTO
+  PAGO_COMPLETADO
+}
+
+model usuarios {
+  id            BigInt      @id @default(autoincrement())
+  nombre        String
+  email         String      @unique
+  password_hash String
+  rol           rol_usuario
+  rating_avg    Decimal     @default(0) @db.Decimal(3, 2)
+  rating_count  Int         @default(0)
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+
+  solicitudes_cliente  solicitudes[] @relation("cliente")
+  solicitudes_operador solicitudes[] @relation("operador")
+  pagos                pagos[]
+  reviews_autor        reviews[]     @relation("autor")
+  reviews_objetivo     reviews[]     @relation("objetivo")
+  notificaciones       notificaciones[]
+}
+
+model camiones {
+  id           BigInt   @id @default(autoincrement())
+  patente      String   @unique
+  capacidad    Int
+  consumo_l_km Decimal  @db.Decimal(8, 4)
+  activo       Boolean  @default(true)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @db.Timestamptz(6)
+
+  solicitudes solicitudes[]
+}
+
+model configuracion {
+  id                       Int      @id
+  precio_combustible_litro Decimal  @db.Decimal(10, 2)
+  updated_at               DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model solicitudes {
+  id                 BigInt           @id @default(autoincrement())
+  cliente_id         BigInt
+  operador_id        BigInt?
+  camion_id          BigInt?
+  solicitante_nombre String
+  cabezas            Int
+
+  origen_lat    Decimal @db.Decimal(9, 6)
+  origen_lng    Decimal @db.Decimal(9, 6)
+  origen_label  String?
+  destino_lat   Decimal @db.Decimal(9, 6)
+  destino_lng   Decimal @db.Decimal(9, 6)
+  destino_label String?
+
+  estado estado_solicitud @default(PENDIENTE)
+
+  distancia_km       Decimal?  @db.Decimal(10, 2)
+  consumo_usado      Decimal?  @db.Decimal(8, 4)
+  precio_litro_usado Decimal?  @db.Decimal(10, 2)
+  costo_por_viaje    Decimal?  @db.Decimal(12, 2)
+  nro_viajes         Int?
+  costo_total        Decimal?  @db.Decimal(14, 2)
+  asignada_at        DateTime? @db.Timestamptz(6)
+
+  cabezas_entregadas Int?
+  entregada_at       DateTime? @db.Timestamptz(6)
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+
+  cliente    usuarios  @relation("cliente", fields: [cliente_id], references: [id])
+  operador   usuarios? @relation("operador", fields: [operador_id], references: [id])
+  camion     camiones? @relation(fields: [camion_id], references: [id])
+  tracking   tracking_points[]
+  pago       pagos?
+  documentos documentos[]
+  reviews    reviews[]
+
+  @@index([estado])
+  @@index([cliente_id])
+  @@index([camion_id])
+}
+
+model pagos {
+  id            BigInt         @id @default(autoincrement())
+  solicitud_id  BigInt         @unique
+  operador_id   BigInt
+  monto         Decimal        @db.Decimal(14, 2)
+  comision_pct  Decimal        @default(10) @db.Decimal(5, 2)
+  fee_pct       Decimal        @default(0) @db.Decimal(5, 2)
+  neto          Decimal        @db.Decimal(14, 2)
+  velocidad     velocidad_pago
+  metodo        metodo_pago    @default(SPI)
+  estado        estado_pago    @default(PENDIENTE)
+  cuenta_last4  String?
+  externo_txn   String?
+  completado_at DateTime?      @db.Timestamptz(6)
+  created_at    DateTime       @default(now()) @db.Timestamptz(6)
+
+  solicitud solicitudes @relation(fields: [solicitud_id], references: [id], onDelete: Cascade)
+  operador  usuarios    @relation(fields: [operador_id], references: [id])
+
+  @@index([operador_id, estado])
+}
+
+model documentos {
+  id           BigInt         @id @default(autoincrement())
+  solicitud_id BigInt
+  tipo         tipo_documento
+  url          String?
+  codigo       String?
+  qr_payload   String?
+  metadata     Json?
+  created_at   DateTime       @default(now()) @db.Timestamptz(6)
+
+  solicitud solicitudes @relation(fields: [solicitud_id], references: [id], onDelete: Cascade)
+
+  @@index([solicitud_id, tipo])
+}
+
+model reviews {
+  id           BigInt   @id @default(autoincrement())
+  solicitud_id BigInt
+  autor_id     BigInt
+  objetivo_id  BigInt
+  rating       Int
+  comentario   String?
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+
+  solicitud solicitudes @relation(fields: [solicitud_id], references: [id], onDelete: Cascade)
+  autor     usuarios    @relation("autor", fields: [autor_id], references: [id])
+  objetivo  usuarios    @relation("objetivo", fields: [objetivo_id], references: [id])
+
+  @@unique([solicitud_id, autor_id])
+  @@index([objetivo_id])
+}
+
+model notificaciones {
+  id         BigInt            @id @default(autoincrement())
+  usuario_id BigInt
+  tipo       tipo_notificacion
+  titulo     String
+  cuerpo     String
+  data       Json?
+  leida      Boolean           @default(false)
+  created_at DateTime          @default(now()) @db.Timestamptz(6)
+
+  usuario usuarios @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@index([usuario_id, leida])
+}
+
+model tracking_points {
+  id            BigInt      @id @default(autoincrement())
+  solicitud_id  BigInt
+  lat           Decimal     @db.Decimal(9, 6)
+  lng           Decimal     @db.Decimal(9, 6)
+  velocidad_kmh Decimal?    @db.Decimal(6, 2)
+  registrado_en DateTime    @default(now()) @db.Timestamptz(6)
+
+  solicitud solicitudes @relation(fields: [solicitud_id], references: [id], onDelete: Cascade)
+
+  @@index([solicitud_id, registrado_en])
+}
