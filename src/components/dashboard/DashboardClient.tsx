@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { Clock, Truck, Route, CheckCircle2, Coins } from "lucide-react";
 import type { SolicitudDTO, Estado } from "@/services/solicitudes";
 import type { ViajeActivo } from "@/components/dashboard/FleetMap";
 import SolicitudCard from "@/components/SolicitudCard";
@@ -145,54 +146,61 @@ export default function DashboardClient({
   }
 
   const kpiCards = [
-    { label: "Pendientes", value: kpis.pendientes, color: "text-gray-700" },
-    { label: "Asignadas", value: kpis.asignadas, color: "text-blue-600" },
-    { label: "En tránsito", value: kpis.enTransito, color: "text-amber-600" },
-    { label: "Completadas", value: kpis.completadas, color: "text-green-600" },
+    { label: "Pendientes", value: kpis.pendientes, Icon: Clock, tone: "text-ink-soft" },
+    { label: "Asignadas", value: kpis.asignadas, Icon: Truck, tone: "text-forest-600" },
+    { label: "En tránsito", value: kpis.enTransito, Icon: Route, tone: "text-amber-500" },
+    { label: "Completadas", value: kpis.completadas, Icon: CheckCircle2, tone: "text-forest-500" },
   ];
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Panel de solicitudes
-        </h1>
-        <p className="text-sm text-gray-500">
-          Gestioná las solicitudes de transporte y seguí tu flota en vivo.
+    <div className="animate-fade-up">
+      <div className="mb-7">
+        <h1 className="font-display text-3xl text-ink">Panel de solicitudes</h1>
+        <p className="mt-1 text-sm text-ink-mute">
+          Gestioná los traslados y seguí tu flota en vivo.
         </p>
       </div>
 
       {/* KPIs */}
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-5">
+      <div className="mb-7 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         {kpiCards.map((k) => (
-          <div
-            key={k.label}
-            className="rounded-xl border border-gray-200 bg-white p-4"
-          >
-            <p className={`text-3xl font-bold ${k.color}`}>{k.value}</p>
-            <p className="text-xs text-gray-500">{k.label}</p>
+          <div key={k.label} className="card p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-bold text-ink">{k.value}</p>
+              <k.Icon size={20} className={k.tone} strokeWidth={2} />
+            </div>
+            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-ink-mute">
+              {k.label}
+            </p>
           </div>
         ))}
-        <div className="rounded-xl border border-brand-200 bg-brand-50 p-4">
-          <p className="text-2xl font-bold text-brand-700">
-            {formatMoney(kpis.gastoProyectado)}
+        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 shadow-soft">
+          <div className="flex items-center justify-between">
+            <p className="text-2xl font-bold text-amber-600">
+              {formatMoney(kpis.gastoProyectado)}
+            </p>
+            <Coins size={20} className="text-amber-500" strokeWidth={2} />
+          </div>
+          <p className="mt-1 text-xs font-medium uppercase tracking-wide text-amber-600/80">
+            Gasto proyectado
           </p>
-          <p className="text-xs text-brand-700/70">Gasto proyectado</p>
         </div>
       </div>
 
       {/* Mapa de flota en vivo */}
       {viajesActivos.length > 0 && (
-        <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-            <h2 className="font-semibold text-gray-900">
-              🚚 Flota en vivo
-              <span className="ml-2 text-sm font-normal text-gray-500">
-                {viajesActivos.length} viaje
-                {viajesActivos.length > 1 ? "s" : ""} activo
-                {viajesActivos.length > 1 ? "s" : ""}
-              </span>
-            </h2>
+        <div className="card mb-7 overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-cream-200 px-5 py-3.5">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-forest-400 opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-forest-500" />
+            </span>
+            <h2 className="font-semibold text-ink">Flota en vivo</h2>
+            <span className="text-sm text-ink-mute">
+              · {viajesActivos.length} viaje
+              {viajesActivos.length > 1 ? "s" : ""} activo
+              {viajesActivos.length > 1 ? "s" : ""}
+            </span>
           </div>
           <div className="h-72">
             <FleetMap viajes={viajesActivos} />
@@ -205,10 +213,10 @@ export default function DashboardClient({
           <button
             key={f.value}
             onClick={() => setFiltro(f.value)}
-            className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+            className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
               filtro === f.value
-                ? "bg-brand-600 text-white"
-                : "bg-white text-gray-600 ring-1 ring-gray-200 hover:bg-gray-50"
+                ? "bg-forest-600 text-cream-50 shadow-soft"
+                : "border border-cream-300 bg-white/70 text-ink-soft hover:border-forest-200"
             }`}
           >
             {f.label}
@@ -217,7 +225,7 @@ export default function DashboardClient({
       </div>
 
       {visibles.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white p-12 text-center text-gray-400">
+        <div className="rounded-2xl border border-dashed border-cream-300 bg-white/60 p-14 text-center text-ink-mute">
           No hay solicitudes en este estado.
         </div>
       ) : (

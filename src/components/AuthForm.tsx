@@ -6,9 +6,6 @@ import Link from "next/link";
 
 type Mode = "login" | "register";
 
-const inputClass =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20";
-
 export default function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -30,12 +27,10 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-
       if (!res.ok) {
         setError(data?.error?.message ?? "Ocurrió un error");
         return;
       }
-      // El servidor ya seteó la cookie de sesión; redirige por rol.
       const rol = data?.usuario?.rol;
       router.push(rol === "operador" ? "/dashboard" : "/mis-solicitudes");
       router.refresh();
@@ -47,81 +42,91 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-900">
-        {mode === "login" ? "Iniciar sesión" : "Crear cuenta"}
-      </h2>
+    <form onSubmit={onSubmit} className="space-y-5">
+      <div>
+        <h1 className="font-display text-3xl text-ink">
+          {mode === "login" ? "Bienvenido de nuevo" : "Creá tu cuenta"}
+        </h1>
+        <p className="mt-1 text-sm text-ink-mute">
+          {mode === "login"
+            ? "Ingresá para gestionar tus traslados."
+            : "Empezá a mover ganado de forma simple."}
+        </p>
+      </div>
 
       {mode === "register" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Nombre o razón social
-          </label>
-          <input name="nombre" required className={inputClass} />
+          <label className="label">Nombre o razón social</label>
+          <input name="nombre" required className="field" placeholder="Estancia La Pradera" />
         </div>
       )}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          Email
-        </label>
-        <input name="email" type="email" required className={inputClass} />
+        <label className="label">Email</label>
+        <input
+          name="email"
+          type="email"
+          required
+          className="field"
+          placeholder="vos@ejemplo.com"
+        />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">
-          Contraseña
-        </label>
+        <label className="label">Contraseña</label>
         <input
           name="password"
           type="password"
           required
-          className={inputClass}
+          className="field"
+          placeholder="••••••••"
         />
       </div>
 
       {mode === "register" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Soy…
-          </label>
-          <select name="rol" required defaultValue="cliente" className={inputClass}>
-            <option value="cliente">Cliente (solicito transportes)</option>
-            <option value="operador">Operador (gestiono la flota)</option>
+          <label className="label">¿Cómo vas a usar BoviTrans?</label>
+          <select name="rol" required defaultValue="cliente" className="field">
+            <option value="cliente">Soy cliente — solicito transportes</option>
+            <option value="operador">Soy operador — gestiono la flota</option>
           </select>
         </div>
       )}
 
       {error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-xl border border-red-100 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
           {error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className="btn-primary w-full">
         {loading
           ? "Procesando…"
           : mode === "login"
             ? "Entrar"
-            : "Registrarme"}
+            : "Crear cuenta"}
       </button>
 
-      <p className="text-center text-sm text-gray-500">
+      {mode === "login" && (
+        <div className="rounded-xl border border-cream-200 bg-cream-50 px-3.5 py-2.5 text-xs text-ink-mute">
+          <span className="font-semibold text-ink-soft">Demo:</span>{" "}
+          operador@bovitrans.com · cliente1@bovitrans.com — contraseña{" "}
+          <span className="font-mono text-forest-700">demo1234</span>
+        </div>
+      )}
+
+      <p className="text-center text-sm text-ink-mute">
         {mode === "login" ? (
           <>
             ¿No tenés cuenta?{" "}
-            <Link href="/register" className="font-medium text-brand-600">
+            <Link href="/register" className="font-semibold text-forest-600 hover:text-forest-700">
               Registrate
             </Link>
           </>
         ) : (
           <>
             ¿Ya tenés cuenta?{" "}
-            <Link href="/login" className="font-medium text-brand-600">
+            <Link href="/login" className="font-semibold text-forest-600 hover:text-forest-700">
               Iniciá sesión
             </Link>
           </>

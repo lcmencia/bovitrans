@@ -16,8 +16,8 @@ export default async function ReportesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Reportes</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="font-display text-3xl text-ink">Reportes</h1>
+        <p className="mt-1 text-sm text-ink-mute">
           Indicadores de tu operación logística.
         </p>
       </div>

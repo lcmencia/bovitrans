@@ -1,16 +1,15 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import Topbar from "@/components/Topbar";
+import Sidebar, { type NavItem } from "@/components/Sidebar";
 
-const NAV = [
-  { href: "/dashboard", label: "Solicitudes" },
-  { href: "/flota", label: "Flota" },
-  { href: "/dinero", label: "Dinero" },
-  { href: "/reportes", label: "Reportes" },
-  { href: "/configuracion", label: "Configuración" },
+const NAV: NavItem[] = [
+  { href: "/dashboard", label: "Solicitudes", icon: "dashboard" },
+  { href: "/flota", label: "Flota", icon: "flota" },
+  { href: "/dinero", label: "Dinero", icon: "dinero" },
+  { href: "/reportes", label: "Reportes", icon: "reportes" },
+  { href: "/configuracion", label: "Configuración", icon: "config" },
 ];
 
-// Shell del operador con guard de rol (US-1.3).
 export default async function OperadorLayout({
   children,
 }: {
@@ -21,9 +20,11 @@ export default async function OperadorLayout({
   if (session.rol !== "operador") redirect("/mis-solicitudes");
 
   return (
-    <div className="min-h-screen">
-      <Topbar nombre={session.nombre} rol={session.rol} items={NAV} />
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+    <div className="min-h-screen lg:pl-72">
+      <Sidebar nombre={session.nombre} rol={session.rol} items={NAV} />
+      <main className="mx-auto max-w-6xl px-5 py-8 lg:px-10 lg:py-10">
+        {children}
+      </main>
     </div>
   );
 }

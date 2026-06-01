@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Bell } from "lucide-react";
 
 type Notif = {
   id: string;
@@ -58,37 +59,37 @@ export default function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={abrir}
-        className="relative rounded-lg p-2 text-gray-600 hover:bg-gray-100"
+        className="relative grid h-10 w-10 place-items-center rounded-xl border border-cream-200 bg-white/80 text-ink-soft shadow-soft transition hover:border-forest-200 hover:text-forest-700"
         aria-label="Notificaciones"
       >
-        <span className="text-lg">🔔</span>
+        <Bell size={18} />
         {noLeidas > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-amber-500 text-[10px] font-bold text-white ring-2 ring-cream-50">
             {noLeidas > 9 ? "9+" : noLeidas}
           </span>
         )}
       </button>
 
       {abierto && (
-        <div className="absolute right-0 z-30 mt-2 w-80 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
-          <div className="border-b border-gray-100 px-4 py-2 text-sm font-semibold text-gray-900">
+        <div className="absolute right-0 z-30 mt-2 w-80 overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-lift">
+          <div className="border-b border-cream-200 px-4 py-2.5 text-sm font-semibold text-ink">
             Notificaciones
           </div>
           <div className="max-h-96 overflow-y-auto">
             {items.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-gray-400">
+              <p className="px-4 py-8 text-center text-sm text-ink-mute">
                 Sin notificaciones
               </p>
             ) : (
               items.map((n) => (
                 <div
                   key={n.id}
-                  className={`border-b border-gray-50 px-4 py-3 ${
-                    n.leida ? "" : "bg-brand-50/40"
+                  className={`border-b border-cream-100 px-4 py-3 ${
+                    n.leida ? "" : "bg-forest-50/50"
                   }`}
                 >
-                  <p className="text-sm font-medium text-gray-900">{n.titulo}</p>
-                  <p className="text-xs text-gray-500">{n.cuerpo}</p>
+                  <p className="text-sm font-medium text-ink">{n.titulo}</p>
+                  <p className="text-xs text-ink-mute">{n.cuerpo}</p>
                 </div>
               ))
             )}

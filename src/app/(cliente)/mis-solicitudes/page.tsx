@@ -23,8 +23,8 @@ export default async function MisSolicitudesPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mis solicitudes</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="font-display text-3xl text-ink">Mis solicitudes</h1>
+          <p className="mt-1 text-sm text-ink-mute">
             Seguí el estado de tus traslados de ganado.
           </p>
         </div>

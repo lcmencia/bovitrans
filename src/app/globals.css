@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #f7f9f7;
-  --foreground: #16241a;
+  --background: #fbfaf6;
+  --foreground: #1a2420;
 }
 
 html,
@@ -15,10 +15,71 @@ body {
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background:
+    radial-gradient(60rem 60rem at 110% -10%, #eef4ef 0%, transparent 55%),
+    radial-gradient(50rem 50rem at -10% 110%, #f5debe33 0%, transparent 50%),
+    var(--background);
+  background-attachment: fixed;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 * {
   box-sizing: border-box;
+}
+
+::selection {
+  background: #d6e5da;
+  color: #173d24;
+}
+
+/* Scrollbar sutil, tintado a la marca */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-thumb {
+  background: #ded3bd;
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aec9b6;
+  background-clip: content-box;
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+
+  /* Botones */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-forest-600 text-cream-50 shadow-soft hover:bg-forest-700 hover:shadow-lift active:scale-[0.98];
+  }
+  .btn-accent {
+    @apply btn bg-amber-500 text-white hover:bg-amber-600 active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply btn border border-cream-300 bg-white/70 text-ink-soft hover:border-forest-200 hover:bg-white;
+  }
+
+  /* Tarjetas */
+  .card {
+    @apply rounded-2xl border border-cream-200 bg-white shadow-soft;
+  }
+
+  /* Inputs */
+  .field {
+    @apply w-full rounded-xl border border-cream-300 bg-cream-50/60 px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-mute/60 focus:border-forest-400 focus:bg-white focus:ring-4 focus:ring-forest-500/10;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-mute;
+  }
 }

@@ -9,8 +9,8 @@ export default async function ConfiguracionPage() {
   return (
     <div className="max-w-xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Configuración</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="font-display text-3xl text-ink">Configuración</h1>
+        <p className="mt-1 text-sm text-ink-mute">
           Parámetros globales usados en los cálculos de costo.
         </p>
       </div>
