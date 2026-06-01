@@ -2,9 +2,29 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import type { SolicitudDTO, Estado } from "@/services/solicitudes";
+import type { ViajeActivo } from "@/components/dashboard/FleetMap";
 import SolicitudCard from "@/components/SolicitudCard";
 import AsignarModal from "@/components/dashboard/AsignarModal";
+import { formatMoney } from "@/lib/format";
+
+const FleetMap = dynamic(() => import("@/components/dashboard/FleetMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-full place-items-center bg-gray-100 text-sm text-gray-400">
+      Cargando mapa de flota…
+    </div>
+  ),
+});
+
+type Kpis = {
+  pendientes: number;
+  asignadas: number;
+  enTransito: number;
+  completadas: number;
+  gastoProyectado: number;
+};
 
 const FILTROS: { value: Estado | "TODAS"; label: string }[] = [
   { value: "TODAS", label: "Todas" },
@@ -17,8 +37,12 @@ const FILTROS: { value: Estado | "TODAS"; label: string }[] = [
 
 export default function DashboardClient({
   initial,
+  kpis,
+  viajesActivos,
 }: {
   initial: SolicitudDTO[];
+  kpis: Kpis;
+  viajesActivos: ViajeActivo[];
 }) {
   const [solicitudes, setSolicitudes] = useState<SolicitudDTO[]>(initial);
   const [filtro, setFiltro] = useState<Estado | "TODAS">("TODAS");
@@ -127,8 +151,62 @@ export default function DashboardClient({
     return null;
   }
 
+  const kpiCards = [
+    { label: "Pendientes", value: kpis.pendientes, color: "text-gray-700" },
+    { label: "Asignadas", value: kpis.asignadas, color: "text-blue-600" },
+    { label: "En tránsito", value: kpis.enTransito, color: "text-amber-600" },
+    { label: "Completadas", value: kpis.completadas, color: "text-green-600" },
+  ];
+
   return (
     <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Panel de solicitudes
+        </h1>
+        <p className="text-sm text-gray-500">
+          Gestioná las solicitudes de transporte y seguí tu flota en vivo.
+        </p>
+      </div>
+
+      {/* KPIs */}
+      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-5">
+        {kpiCards.map((k) => (
+          <div
+            key={k.label}
+            className="rounded-xl border border-gray-200 bg-white p-4"
+          >
+            <p className={`text-3xl font-bold ${k.color}`}>{k.value}</p>
+            <p className="text-xs text-gray-500">{k.label}</p>
+          </div>
+        ))}
+        <div className="rounded-xl border border-brand-200 bg-brand-50 p-4">
+          <p className="text-2xl font-bold text-brand-700">
+            {formatMoney(kpis.gastoProyectado)}
+          </p>
+          <p className="text-xs text-brand-700/70">Gasto proyectado</p>
+        </div>
+      </div>
+
+      {/* Mapa de flota en vivo */}
+      {viajesActivos.length > 0 && (
+        <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+            <h2 className="font-semibold text-gray-900">
+              🚚 Flota en vivo
+              <span className="ml-2 text-sm font-normal text-gray-500">
+                {viajesActivos.length} viaje
+                {viajesActivos.length > 1 ? "s" : ""} activo
+                {viajesActivos.length > 1 ? "s" : ""}
+              </span>
+            </h2>
+          </div>
+          <div className="h-72">
+            <FleetMap viajes={viajesActivos} />
+          </div>
+        </div>
+      )}
+
       <div className="mb-5 flex flex-wrap gap-2">
         {FILTROS.map((f) => (
           <button
